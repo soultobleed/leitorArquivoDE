@@ -6,8 +6,9 @@ package leitorarquivode;
 
 import javax.swing.JFileChooser;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
-import leitorarquivode.processadorArquivoDE;
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.text.NumberFormat;
@@ -40,12 +41,13 @@ public class framePrincipal extends javax.swing.JFrame {
         jFrame1 = new javax.swing.JFrame();
         jFrame2 = new javax.swing.JFrame();
         jDialog2 = new javax.swing.JDialog();
-        jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jLPasta = new javax.swing.JLabel();
+        jTPastaSelecionada = new javax.swing.JTextField();
+        jBSelecionar = new javax.swing.JButton();
+        jBProcessar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        jTResult = new javax.swing.JTextArea();
+        jBGerarCapas = new javax.swing.JButton();
 
         javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
         jDialog1.getContentPane().setLayout(jDialog1Layout);
@@ -95,33 +97,42 @@ public class framePrincipal extends javax.swing.JFrame {
         setTitle("Processador de Arquivo DE");
         setLocationByPlatform(true);
 
-        jLabel1.setText("Pasta");
+        jLPasta.setText("Pasta");
 
-        jTextField1.setEditable(false);
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        jTPastaSelecionada.setEditable(false);
+        jTPastaSelecionada.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                jTPastaSelecionadaActionPerformed(evt);
             }
         });
 
-        jButton1.setText("Selecionar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jBSelecionar.setText("Selecionar");
+        jBSelecionar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jBSelecionarActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Processar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        jBProcessar.setText("Processar");
+        jBProcessar.setEnabled(false);
+        jBProcessar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                jBProcessarActionPerformed(evt);
             }
         });
 
-        jTextArea1.setEditable(false);
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        jTResult.setEditable(false);
+        jTResult.setColumns(20);
+        jTResult.setRows(5);
+        jScrollPane1.setViewportView(jTResult);
+
+        jBGerarCapas.setText("Gerar Capas");
+        jBGerarCapas.setEnabled(false);
+        jBGerarCapas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBGerarCapasActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -132,14 +143,16 @@ public class framePrincipal extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        .addComponent(jLPasta)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTPastaSelecionada, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1)
+                        .addComponent(jBSelecionar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)
-                        .addGap(0, 181, Short.MAX_VALUE)))
+                        .addComponent(jBProcessar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jBGerarCapas)
+                        .addGap(0, 82, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -147,10 +160,11 @@ public class framePrincipal extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(jLPasta)
+                    .addComponent(jTPastaSelecionada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jBSelecionar)
+                    .addComponent(jBProcessar)
+                    .addComponent(jBGerarCapas))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
                 .addContainerGap())
@@ -159,12 +173,13 @@ public class framePrincipal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void jTPastaSelecionadaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTPastaSelecionadaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_jTPastaSelecionadaActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
+    private void jBSelecionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBSelecionarActionPerformed
+        jBGerarCapas.setEnabled(false);
+        jBProcessar.setEnabled(false);
         //Seleção do arquivo
         JFileChooser filechooser = new JFileChooser();
         filechooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -179,43 +194,64 @@ public class framePrincipal extends javax.swing.JFrame {
         //Testa o que o usuário clicou
         switch (returnVal) {
             case JFileChooser.APPROVE_OPTION: //Ok
-                jTextField1.setText(selDir.getAbsolutePath());
+                jTPastaSelecionada.setText(selDir.getAbsolutePath());
                 //Itera sobre os arquivos no diretório selecionado usando o filtro
                 for (File file : selDir.listFiles(filter)) {
                     System.out.println(file);
                     list.add(file);
                 }
+                jBGerarCapas.setEnabled(true);
+                jBProcessar.setEnabled(true);
                 break;
 
             case JFileChooser.CANCEL_OPTION: //Cancelar
-                jTextField1.setText("Pasta não selecionada");
+                jTPastaSelecionada.setText("Pasta não selecionada");
                 break;
             case JFileChooser.ERROR_OPTION: //shit happens...
                 break;
         }
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jBSelecionarActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jBProcessarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBProcessarActionPerformed
         double valor_total = 0;
-
-        jTextArea1.append("Quantide de arquivos encontrados: ");
-        jTextArea1.append(String.valueOf(list.size()) + " \n \n");
+        jTResult.setText(null);
+        jTResult.append("Quantide de arquivos encontrados: ");
+        jTResult.append(String.valueOf(list.size()) + " \n \n");
+        processadorArquivoDE a = new processadorArquivoDE();
         for (File file : list) {
-            processadorArquivoDE a = new processadorArquivoDE();
             a.processa(file);
-            jTextArea1.append(file.getName() + "\n");
-            jTextArea1.append("Valor total: ");
-            jTextArea1.append(a.getValorArquivoFormatado() + "\n");
-            jTextArea1.append("Quantidade de Contratos: ");
-            jTextArea1.append(String.valueOf(a.getTotalContratos()) + "\n");
-            jTextArea1.append("---------------------------");
+            jTResult.append(file.getName() + "\n");
+            jTResult.append("Valor total: ");
+            jTResult.append(a.getValorArquivoFormatado() + "\n");
+            jTResult.append("Quantidade de Contratos: ");
+            jTResult.append(String.valueOf(a.getTotalContratos()) + "\n");
+            jTResult.append("---------------------------");
             valor_total += a.getValorArquivoAsDouble();
-            jTextArea1.append("\n \n");
+            jTResult.append("\n \n");
         }
-        jTextArea1.append("Valor total dos Arquivos: ");
-        jTextArea1.append(NumberFormat.getCurrencyInstance().format(valor_total));
-    }//GEN-LAST:event_jButton2ActionPerformed
+        jTResult.append("Valor total dos Arquivos: ");
+        jTResult.append(NumberFormat.getCurrencyInstance().format(valor_total));
+        
+    }//GEN-LAST:event_jBProcessarActionPerformed
+
+    private void jBGerarCapasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBGerarCapasActionPerformed
+        // TODO add your handling code here:
+        for (File file : list ){
+            try {
+                geradorCapas gc = new geradorCapas(file);
+                gc.writeCapa();
+                jTResult.append("\n");
+                jTResult.append("Gerando arquivo: ");
+                jTResult.append(gc.getNomeDoArquivo());
+                jTResult.append("\n");
+                System.out.println(gc.getNomeDoArquivo());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            
+        }
+    }//GEN-LAST:event_jBGerarCapasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -252,15 +288,16 @@ public class framePrincipal extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jBGerarCapas;
+    private javax.swing.JButton jBProcessar;
+    private javax.swing.JButton jBSelecionar;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JDialog jDialog2;
     private javax.swing.JFrame jFrame1;
     private javax.swing.JFrame jFrame2;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLPasta;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTPastaSelecionada;
+    private javax.swing.JTextArea jTResult;
     // End of variables declaration//GEN-END:variables
 }

@@ -4,9 +4,6 @@
  */
 package leitorarquivode;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.BufferedReader;
 import java.io.*;
 import java.text.NumberFormat;
 
@@ -34,12 +31,13 @@ public class processadorArquivoDE {
     private int contaContratos;
 
     public processadorArquivoDE() {
-        this.valorArquivo = 0;
-        this.contaContratos = 0;
+
     }
 
     public void processa(File filename) {
         double somaLinhas = 0.00;
+        this.valorArquivo = 0;
+        this.contaContratos = 0;
 
         try {
             FileReader fr = new FileReader(filename);
