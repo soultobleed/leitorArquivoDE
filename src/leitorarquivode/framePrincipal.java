@@ -215,6 +215,8 @@ public class framePrincipal extends javax.swing.JFrame {
 
     private void jBProcessarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBProcessarActionPerformed
         double valor_total = 0;
+        int qtde_contratos;
+        qtde_contratos = 0;
         jTResult.setText(null);
         jTResult.append("Quantide de arquivos encontrados: ");
         jTResult.append(String.valueOf(list.size()) + " \n \n");
@@ -227,11 +229,14 @@ public class framePrincipal extends javax.swing.JFrame {
             jTResult.append("Quantidade de Contratos: ");
             jTResult.append(String.valueOf(a.getTotalContratos()) + "\n");
             jTResult.append("---------------------------");
-            valor_total += a.getValorArquivoAsDouble();
             jTResult.append("\n \n");
+            valor_total += a.getValorArquivoAsDouble();
+            qtde_contratos += a.getTotalContratos();
         }
         jTResult.append("Valor total dos Arquivos: ");
         jTResult.append(NumberFormat.getCurrencyInstance().format(valor_total));
+        jTResult.append("\n Quantidade total de contratos: ");
+        jTResult.append(String.valueOf(qtde_contratos));
         
     }//GEN-LAST:event_jBProcessarActionPerformed
 
