@@ -65,14 +65,16 @@ class geradorPlanilhas {
         for (int i = 0; i < listaContratos.size(); i++) {
          Label label = new Label(1, i, listaContratos.get(i).toString()); 
          this.sheet.addCell(label);
+         workbook.write();
         }
-        workbook.write();
+        
     }
 
     public void processa() throws IOException {
        try {
             this.setHeader();
             this.setBody();
+            this.workbook.close();
 
         } catch (WriteException ex) {
             Logger.getLogger(geradorPlanilhas.class.getName()).log(Level.SEVERE, null, ex);
