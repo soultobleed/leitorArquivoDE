@@ -6,6 +6,8 @@ package leitorarquivode;
 
 import java.io.*;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -29,22 +31,39 @@ public class processadorArquivoDE {
 
     private double valorArquivo;
     private int contaContratos;
+    private ArrayList listaClientes;
+    private ArrayList listaContratos;
+    private ArrayList listaValores;
+    
+
 
     public processadorArquivoDE() {
+        this.listaValores = new ArrayList();
+        this.listaContratos = new ArrayList();
+        this.listaClientes = new ArrayList();
 
-    }
+   
+    }    
 
     public void processa(File filename) {
         double somaLinhas = 0.00;
         this.valorArquivo = 0;
         this.contaContratos = 0;
+        
+        
+        
 
         try {
             FileReader fr = new FileReader(filename);
             BufferedReader br = new BufferedReader(fr);
             String line;
+            System.out.println(listaContratos.toString());
             while ((line = br.readLine()) != null) {
+                System.out.println(listaContratos.toString());
                 if (line.startsWith("2")) {
+                    listaContratos.add(line.substring(67, 81));
+                    listaContratos.add(line.substring(67, 81));
+                    listaValores.add(String.valueOf(line.substring(57, 67)));
                     somaLinhas += Double.valueOf(line.substring(57, 67));
                     contaContratos++;
                 }
@@ -55,7 +74,19 @@ public class processadorArquivoDE {
             setValorArquivo(somaLinhas);
         }
     }
-
+    
+    public List getListaClientes() {
+        return listaClientes;
+    }
+    
+    public List getListaValores() {
+        return listaValores;
+    }
+    
+    public List getListaContratos() { 
+        return listaContratos;
+    }
+    
     public int getTotalContratos() {
         return contaContratos;
     }

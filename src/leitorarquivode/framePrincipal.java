@@ -4,6 +4,7 @@
  */
 package leitorarquivode;
 
+import java.awt.Dialog;
 import javax.swing.JFileChooser;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,6 +13,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.text.NumberFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.StyledEditorKit;
+import jxl.read.biff.BiffException;
 
 /**
  *
@@ -20,6 +25,7 @@ import java.text.NumberFormat;
 public class framePrincipal extends javax.swing.JFrame {
 
     List<File> list = new ArrayList();
+
 
     /**
      * Creates new form framePrincipal
@@ -48,6 +54,7 @@ public class framePrincipal extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTResult = new javax.swing.JTextArea();
         jBGerarCapas = new javax.swing.JButton();
+        jBGeraPlanilhas = new javax.swing.JButton();
 
         javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
         jDialog1.getContentPane().setLayout(jDialog1Layout);
@@ -134,6 +141,14 @@ public class framePrincipal extends javax.swing.JFrame {
             }
         });
 
+        jBGeraPlanilhas.setText("Gerar Planilhas");
+        jBGeraPlanilhas.setEnabled(false);
+        jBGeraPlanilhas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBGeraPlanilhasActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -152,7 +167,8 @@ public class framePrincipal extends javax.swing.JFrame {
                         .addComponent(jBProcessar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jBGerarCapas)
-                        .addGap(0, 82, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jBGeraPlanilhas)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -164,7 +180,8 @@ public class framePrincipal extends javax.swing.JFrame {
                     .addComponent(jTPastaSelecionada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jBSelecionar)
                     .addComponent(jBProcessar)
-                    .addComponent(jBGerarCapas))
+                    .addComponent(jBGerarCapas)
+                    .addComponent(jBGeraPlanilhas))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
                 .addContainerGap())
@@ -180,6 +197,7 @@ public class framePrincipal extends javax.swing.JFrame {
     private void jBSelecionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBSelecionarActionPerformed
         jBGerarCapas.setEnabled(false);
         jBProcessar.setEnabled(false);
+        jBGeraPlanilhas.setEnabled(false);
         //Seleção do arquivo
         JFileChooser filechooser = new JFileChooser();
         filechooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -202,6 +220,7 @@ public class framePrincipal extends javax.swing.JFrame {
                 }
                 jBGerarCapas.setEnabled(true);
                 jBProcessar.setEnabled(true);
+                jBGeraPlanilhas.setEnabled(true);
                 break;
 
             case JFileChooser.CANCEL_OPTION: //Cancelar
@@ -258,6 +277,32 @@ public class framePrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jBGerarCapasActionPerformed
 
+    private void jBGeraPlanilhasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBGeraPlanilhasActionPerformed
+        // TODO add your handling code here:
+        for (File file : list) {
+            try {
+            geradorPlanilhas gp = new geradorPlanilhas(file);
+            gp.processa();
+            jTResult.append("\n");
+            jTResult.append("Gerando planilha: ");
+            jTResult.append(gp.getNomeDoArquivo());
+            jTResult.append("\n");
+            
+                
+            } catch (IOException | BiffException ex) {
+                Dialog tmpDb = new Dialog(this, "Arquivo Inválido!", true);
+                tmpDb.setVisible(true);        
+                System.out.println(ex);
+         
+            } 
+           
+           
+            
+            
+        }    
+        
+    }//GEN-LAST:event_jBGeraPlanilhasActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -293,6 +338,7 @@ public class framePrincipal extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jBGeraPlanilhas;
     private javax.swing.JButton jBGerarCapas;
     private javax.swing.JButton jBProcessar;
     private javax.swing.JButton jBSelecionar;
