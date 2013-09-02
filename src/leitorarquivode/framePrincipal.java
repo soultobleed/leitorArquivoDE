@@ -24,9 +24,7 @@ import jxl.read.biff.BiffException;
  */
 public class framePrincipal extends javax.swing.JFrame {
 
-    List<File> list = new ArrayList();
-
-
+    List<File> lista_arquivos = new ArrayList();
     /**
      * Creates new form framePrincipal
      */
@@ -114,6 +112,12 @@ public class framePrincipal extends javax.swing.JFrame {
         });
 
         jBSelecionar.setText("Selecionar");
+        jBSelecionar.setToolTipText("Seleciona a pasta onde estão os arquivos");
+        jBSelecionar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jBSelecionarMouseEntered(evt);
+            }
+        });
         jBSelecionar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jBSelecionarActionPerformed(evt);
@@ -121,6 +125,7 @@ public class framePrincipal extends javax.swing.JFrame {
         });
 
         jBProcessar.setText("Processar");
+        jBProcessar.setToolTipText("Processa os arquivos DE dentro da pasta");
         jBProcessar.setEnabled(false);
         jBProcessar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -134,6 +139,7 @@ public class framePrincipal extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTResult);
 
         jBGerarCapas.setText("Gerar Capas");
+        jBGerarCapas.setToolTipText("Gera as capas baseado nos arquivos DE");
         jBGerarCapas.setEnabled(false);
         jBGerarCapas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -142,6 +148,7 @@ public class framePrincipal extends javax.swing.JFrame {
         });
 
         jBGeraPlanilhas.setText("Gerar Planilhas");
+        jBGeraPlanilhas.setToolTipText("Gera as planilhas baseadas nos arquivos DE");
         jBGeraPlanilhas.setEnabled(false);
         jBGeraPlanilhas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -153,11 +160,11 @@ public class framePrincipal extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jLPasta)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jTPastaSelecionada, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -183,9 +190,11 @@ public class framePrincipal extends javax.swing.JFrame {
                     .addComponent(jBGerarCapas)
                     .addComponent(jBGeraPlanilhas))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jBGeraPlanilhas.getAccessibleContext().setAccessibleDescription("");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -198,6 +207,7 @@ public class framePrincipal extends javax.swing.JFrame {
         jBGerarCapas.setEnabled(false);
         jBProcessar.setEnabled(false);
         jBGeraPlanilhas.setEnabled(false);
+        lista_arquivos.clear();
         //Seleção do arquivo
         JFileChooser filechooser = new JFileChooser();
         filechooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -216,7 +226,7 @@ public class framePrincipal extends javax.swing.JFrame {
                 //Itera sobre os arquivos no diretório selecionado usando o filtro
                 for (File file : selDir.listFiles(filter)) {
                     System.out.println(file);
-                    list.add(file);
+                    lista_arquivos.add(file);
                 }
                 jBGerarCapas.setEnabled(true);
                 jBProcessar.setEnabled(true);
@@ -233,14 +243,15 @@ public class framePrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jBSelecionarActionPerformed
 
     private void jBProcessarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBProcessarActionPerformed
-        double valor_total = 0;
+        double valor_total;
         int qtde_contratos;
         qtde_contratos = 0;
+        valor_total = 0;
         jTResult.setText(null);
         jTResult.append("Quantide de arquivos encontrados: ");
-        jTResult.append(String.valueOf(list.size()) + " \n \n");
+        jTResult.append(String.valueOf(lista_arquivos.size()) + " \n \n");
         processadorArquivoDE a = new processadorArquivoDE();
-        for (File file : list) {
+        for (File file : lista_arquivos) {
             a.processa(file);
             jTResult.append(file.getName() + "\n");
             jTResult.append("Valor total: ");
@@ -260,8 +271,8 @@ public class framePrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jBProcessarActionPerformed
 
     private void jBGerarCapasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBGerarCapasActionPerformed
-        // TODO add your handling code here:
-        for (File file : list ){
+
+        for (File file : lista_arquivos ){
             try {
                 geradorCapas gc = new geradorCapas(file);
                 gc.writeCapa();
@@ -277,17 +288,29 @@ public class framePrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jBGerarCapasActionPerformed
 
+    private void jFCEscolhePlanilha(java.awt.event.ActionEvent evt) {
+      FilenameFilter filter = new OnlyExt("xls");
+      JFileChooser tmpFileChooser = new JFileChooser(".");
+      tmpFileChooser.setVisible(true);
+      tmpFileChooser.setDialogTitle("Selecionar Planilha do Banco");
+      tmpFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+      
+    
+    }
+    
     private void jBGeraPlanilhasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBGeraPlanilhasActionPerformed
-        // TODO add your handling code here:
-        for (File file : list) {
+    
+        
+        for (File file : lista_arquivos) {
             try {
-            geradorPlanilhas gp = new geradorPlanilhas(file);
-            gp.processa();
-            jTResult.append("\n");
-            jTResult.append("Gerando planilha: ");
-            jTResult.append(gp.getNomeDoArquivo());
-            jTResult.append("\n");
-            
+                
+                geradorPlanilhas gp = new geradorPlanilhas(file);
+                gp.processa();
+                jTResult.append("\n");
+                jTResult.append("Gerando planilha: ");
+                jTResult.append(gp.getNomeDoArquivo());
+                jTResult.append("\n");
+                System.out.println(gp.getNomeDoArquivo());
                 
             } catch (IOException | BiffException ex) {
                 Dialog tmpDb = new Dialog(this, "Arquivo Inválido!", true);
@@ -295,13 +318,13 @@ public class framePrincipal extends javax.swing.JFrame {
                 System.out.println(ex);
          
             } 
-           
-           
-            
             
         }    
-        
     }//GEN-LAST:event_jBGeraPlanilhasActionPerformed
+
+    private void jBSelecionarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBSelecionarMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jBSelecionarMouseEntered
 
     /**
      * @param args the command line arguments
