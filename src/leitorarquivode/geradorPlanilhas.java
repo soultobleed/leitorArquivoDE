@@ -8,6 +8,7 @@ package leitorarquivode;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,6 +20,9 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+import jxl.write.Number;
+import jxl.write.NumberFormats;
+import jxl.write.WritableCellFormat;
 
 /**
  *
@@ -48,32 +52,50 @@ class geradorPlanilhas {
     }
     
     private void setHeader() throws WriteException, IOException {
-     String[] cabecalhos = { "Contrato Gestão", "Assessoria", "Empresa", "Tipo Campanha", "Valor Pago Premiação" };
+     String[] cabecalhos = { "Contrato Gestão", "Assessoria", "Empresa", "Tipo Campanha", "Valor Pago",  "Premiação" };
         for (int i = 0; i < cabecalhos.length; i++) {
          Label label = new Label(i, 0, cabecalhos[i]); 
          this.sheet.addCell(label);
         }
-        workbook.write();
     }
     
     private void setBody() throws WriteException, IOException {
+        WritableCellFormat integerFormat = new WritableCellFormat (NumberFormats.INTEGER); 
         processadorArquivoDE pa = new processadorArquivoDE();
         pa.processa(file);
         List listaContratos = pa.getListaContratos();
         List listaValores = pa.getListaValores();
         
         for (int i = 0; i < listaContratos.size(); i++) {
-         Label label = new Label(1, i, listaContratos.get(i).toString()); 
+         Number nrContrato = new Number(0, i+1, Double.valueOf(listaContratos.get(i).toString()), integerFormat); //Contrato Gestão
+         this.sheet.addCell(nrContrato);
+         Label label = new Label(2, i+1, "PASQUALI"); //Assessoria
          this.sheet.addCell(label);
-         workbook.write();
+         label = new Label(5, i+1, NumeroFormatado(Double.valueOf(listaValores.get(i).toString()))); //Valor Pago
+         this.sheet.addCell(label);
+	 //label = new Label(5, i+1, listaValores.get(i).toString());
+         //this.sheet.addCell(label);
         }
         
+        
+            
+        
+        
     }
+        private String NumeroFormatado(double n) {
+        /**
+         * Pelo bem da sanidade mental, devolve o numero formatado no formato R$ 1.000,00
+         */
+        
+        return NumberFormat.getCurrencyInstance().format(n);
+    }
+    
 
     public void processa() throws IOException {
        try {
             this.setHeader();
             this.setBody();
+            this.workbook.write();
             this.workbook.close();
 
         } catch (WriteException ex) {

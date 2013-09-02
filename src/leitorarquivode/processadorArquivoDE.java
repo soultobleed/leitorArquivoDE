@@ -59,11 +59,11 @@ public class processadorArquivoDE {
             String line;
             System.out.println(listaContratos.toString());
             while ((line = br.readLine()) != null) {
-                System.out.println(listaContratos.toString());
+                //System.out.println(listaContratos.toString());
                 if (line.startsWith("2")) {
                     listaContratos.add(line.substring(67, 81));
-                    listaContratos.add(line.substring(67, 81));
-                    listaValores.add(String.valueOf(line.substring(57, 67)));
+                    //listaContratos.add(line.substring(67, 81));
+                    listaValores.add((Double.valueOf(line.substring(57, 67)) / 100));
                     somaLinhas += Double.valueOf(line.substring(57, 67));
                     contaContratos++;
                 }
